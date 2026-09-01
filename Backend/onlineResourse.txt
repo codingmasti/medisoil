@@ -1,0 +1,12 @@
+
+// For payment
+stripe--------
+adityamaurya1138@gmail.com
+
+// For image upload cloud
+cloudinary----------
+adityamaurya1138@gmail.com
+
+// For database
+mongoDB atlas
+adityamaurya1138@gmail.com
