@@ -13,7 +13,7 @@ doctorRouter.get("/", getDoctor);
 doctorRouter.post("/login",doctorLogin);
 
 doctorRouter.get("/:id", getDoctorById);
-doctorRouter.post("/", upload.single("image", createDoctor));
+doctorRouter.post("/", upload.single("image"),createDoctor);
 
 
 //after login
