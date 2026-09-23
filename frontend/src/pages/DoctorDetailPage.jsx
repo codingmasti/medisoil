@@ -26,8 +26,7 @@ const API_BASE = "http://localhost:4000";
 function getScheduleDates(schedule) {
     if (!schedule) return [];
 
-    const keys =
-        typeof schedule === "object" && !Array.isArray(schedule)
+    const keys = typeof schedule === "object" && !Array.isArray(schedule)
             ? Object.keys(schedule)
             : [];
 
@@ -286,6 +285,7 @@ export default function DoctorDetailPage() {
 
         try {
             const token = await getToken();
+            console.log("Token aa raha hai kay: ", token)
             if (!token) {
                 throw new Error("Failed to obtain authentication token.");
             }
@@ -300,9 +300,10 @@ export default function DoctorDetailPage() {
             });
 
             const body = await res.json().catch(() => null);
+
+            console.log("Body me kush aya kay", body)
             if (!res.ok) {
-                const message =
-                    body?.message || body?.error || `Booking failed (${res.status})`;
+                const message = body?.message || body?.error || `Booking failed (${res.status})`;
                 toast.error(message, { position: "top-center" });
                 setIsSubmitting(false);
                 return;

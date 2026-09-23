@@ -4,14 +4,12 @@
   "description": "",
   "main": "index.js",
   "type": "module",
-  "scripts": {
-    
-  },
+  "scripts": {},
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@clerk/clerk-sdk-node": "^4.13.23",
+    "@clerk/clerk-sdk-node": "^5.1.6",
     "@clerk/express": "^2.1.65",
     "body-parser": "^2.3.0",
     "cloudinary": "^2.10.1",

@@ -64,7 +64,7 @@ const AppointmentsPage = () => {
                     throw new Error(body?.message || `Failed to fetch (${res.status})`);
                 }
                 const data = await res.json();
-                const items = (data?.appointments || []).map((a) => {
+                const items = (data?.appointment || []).map((a) => {
                     const doctorName =
                         (a.doctorId && a.doctorId.name) || a.doctorName || "";
                     const speciality =

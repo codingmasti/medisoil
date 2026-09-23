@@ -519,7 +519,7 @@ export const updateServiceAppointment = async (req, res) => {
     try {
         const { id } = req.params;
         const body = req.body || {};
-        const update = {};
+        const updates = {};
 
         //first check whether fill if yes then update the field
         if (body.status !== undefined) updates.status = body.status;
@@ -575,7 +575,7 @@ export const updateServiceAppointment = async (req, res) => {
 
         const updated = await ServiceAppointment.findByIdAndUpdate(id, { $set: updates }, { new: true, runValidators: true });
 
-        if (!update) return res.status(404).json({
+        if (!updated) return res.status(404).json({
             success: false,
             message: "Not found"
         });
@@ -607,7 +607,7 @@ export const cancelServiceAppointment = async (req, res) => {
 }
 
 //to get the statistic
-export const getServiceAppointmentStats = async(req, res) => {
+export const getServiceAppointmentStatus = async(req, res) => {
     try {
         const services = await Service.aggregate([
             {
@@ -633,7 +633,7 @@ export const getServiceAppointmentStats = async(req, res) => {
     });
 
     } catch (e) {
-        console.error("GetServiceAppointmentStats error", e);
+        console.error("GetServiceAppointmentStatus error", e);
         return res.status(500).json({ success: false, message: "Server Error" });
     }
 }
@@ -672,6 +672,6 @@ export default {
     getServiceAppointmentById,
     updateServiceAppointment,
     cancelServiceAppointment,
-    getServiceAppointmentStats,
+    getServiceAppointmentStatus,
     getServiceAppointmentByPatient
 }

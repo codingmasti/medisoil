@@ -1,5 +1,4 @@
-
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrowLeft,
   Clock,
@@ -11,7 +10,7 @@ import {
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "@clerk/react";
 import toast, { Toaster } from "react-hot-toast";
-import { serviceDetailStyles } from "../assets/style/style";
+import { serviceDetailStyles } from "../assets/styles/style";
 
 const DEFAULT_HOST = "http://localhost:4000".replace(/\/$/, "");
 
@@ -41,6 +40,7 @@ export default function ServiceDetail() {
 
   const isValidMobile = (m) => /^\d{10}$/.test(m);
 
+  //finite number  greater then 0 and less the 150
   const isValidAge = (a) => {
     if (a === "" || a === null || a === undefined) return false;
     const n = Number(a);
@@ -59,8 +59,10 @@ export default function ServiceDetail() {
     return missing;
   }
 
+  //checks is form valid by all field are filled or not
   const isFormValid = () => getClientMissingFields().length === 0;
 
+  //fetch the service  from the server
   useEffect(() => {
     let mounted = true;
     const controller = new AbortController();
@@ -228,7 +230,16 @@ export default function ServiceDetail() {
       !Array.isArray(doc.slots) &&
       typeof doc.slots === "object"
     ) {
-      slotsMap = { ...doc.slots };
+
+      slotsMap = {};
+
+      Object.entries(doc.slots).forEach(([date, times]) => {
+        const normalizedDate = normalizeToDateString(date);
+
+        if (normalizedDate) {
+          slotsMap[normalizedDate] = times;
+        }
+      });
       if (dates.length === 0) dates = Object.keys(slotsMap);
     } else if (Array.isArray(doc.slots)) {
       const arr = doc.slots.slice();
@@ -367,7 +378,8 @@ export default function ServiceDetail() {
         return;
       }
 
-      const { appointment, checkoutUrl } = json || {};
+      const {checkoutUrl } = json || {};
+     
 
       if (checkoutUrl) {
         window.location.href = checkoutUrl;
@@ -400,12 +412,8 @@ export default function ServiceDetail() {
     return (
       <div className="min-h-screen flex items-center justify-center p-8">
         <div className="bg-white p-8 rounded-xl shadow-lg text-center">
-          <h2 className="text-2xl font-semibold">
-            Loading service...
-          </h2>
-          <p className="mt-2 text-gray-600">
-            Fetching details from server
-          </p>
+          <h2 className="text-2xl font-semibold">Loading service...</h2>
+          <p className="mt-2 text-gray-600">Fetching details from server</p>
         </div>
       </div>
     );
@@ -415,26 +423,34 @@ export default function ServiceDetail() {
     return (
       <div className="min-h-screen flex items-center justify-center p-8">
         <div className="bg-white p-8 rounded-xl shadow-lg text-center">
-          <h2 className="mt-2 text-gray-600">
-            Service not found
-          </h2>
+          <h2 className="mt-2 text-gray-600">Service not found</h2>
           <p className="mt-2 text-gray-600">
             Please go back and select a valid service.
           </p>
-          <Link to="/services" className="inline-block mt-4 px-4 py-2 bg-emerald-600 text-white rounded-full">
+          <Link
+            to="/services"
+            className="inline-block mt-4 px-4 py-2 bg-emerald-600 text-white rounded-full"
+          >
             Back to Services
           </Link>
         </div>
       </div>
     );
   }
+  console.log("Service me kush aya kya", service);
 
+  console.log("Selected Date:", selectedDate);
+  console.log("Service Slots:", service.slots);
+  console.log("Selected Date Slots:", service.slots?.[selectedDate]);
   return (
     <div className="min-h-screen font-serif bg-linear-to-br from-emerald-50 via-white to-green-50 px-4 lg:px-12 pt-20 sm:pt-12 md:pt-8 lg:pt-0">
       <Toaster />
-      <div className= "backdrop-blur-lg top-0 z-20">
+      <div className="backdrop-blur-lg top-0 z-20">
         <div className="max-w-6xl mx-auto h-16 flex items-center justify-between px-4">
-          <Link to="/services" className="inline-flex items-center gap-2 px-4 py-2 bg-white text-emerald-600 border border-emerald-200 rounded-full hover:bg-emerald-50">
+          <Link
+            to="/services"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-white text-emerald-600 border border-emerald-200 rounded-full hover:bg-emerald-50"
+          >
             <ArrowLeft size={18} />
             Back
           </Link>
@@ -444,7 +460,7 @@ export default function ServiceDetail() {
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-10 mt-6">
         {/* LEFT */}
         <div className="space-y-8">
-          <div className= "w-full h-56 sm:h-72 md:h-96 lg:h-[65vh] xl:h-[70vh] rounded-3xl overflow-hidden shadow-2xl border border-white/50">
+          <div className="w-full h-56 sm:h-72 md:h-96 lg:h-[65vh] xl:h-[70vh] rounded-3xl overflow-hidden shadow-2xl border border-white/50">
             <img
               src={service.image || "/placeholder-service.png"}
               alt={service.name}
@@ -453,7 +469,7 @@ export default function ServiceDetail() {
           </div>
 
           <div className="bg-white p-6 rounded-2xl shadow-xl border border-emerald-100">
-            <h3 className= "text-lg font-semibold text-emerald-700 flex items-center gap-2 mb-4">
+            <h3 className="text-lg font-semibold text-emerald-700 flex items-center gap-2 mb-4">
               <Phone size={20} />
               Your Details
             </h3>
@@ -477,8 +493,8 @@ export default function ServiceDetail() {
                 onChange={(e) => setMobile(e.target.value.replace(/\D/g, ""))}
                 className={
                   mobile && !isValidMobile(mobile)
-                    ?"px-4 py-3 rounded-full border border-rose-500 focus:ring-2 focus:ring-emerald-300 w-full"
-                    :  "px-4 py-3 rounded-full border border-emerald-200 focus:ring-2 focus:ring-emerald-300 w-full"
+                    ? "px-4 py-3 rounded-full border border-rose-500 focus:ring-2 focus:ring-emerald-300 w-full"
+                    : "px-4 py-3 rounded-full border border-emerald-200 focus:ring-2 focus:ring-emerald-300 w-full"
                 }
               />
 
@@ -488,14 +504,14 @@ export default function ServiceDetail() {
                 placeholder="Age *"
                 value={age}
                 onChange={(e) => setAge(e.target.value)}
-                className= "px-4 py-3 rounded-full border border-emerald-200 focus:ring-2 focus:ring-emerald-300 w-full"
+                className="px-4 py-3 rounded-full border border-emerald-200 focus:ring-2 focus:ring-emerald-300 w-full"
               />
 
               <select
                 value={gender}
                 required
                 onChange={(e) => setGender(e.target.value)}
-                className= "px-4 py-3 rounded-full border border-emerald-200 focus:ring-2 focus:ring-emerald-300 w-full"
+                className="px-4 py-3 rounded-full border border-emerald-200 focus:ring-2 focus:ring-emerald-300 w-full"
               >
                 <option value="">Select Gender *</option>
                 <option>Male</option>
@@ -508,15 +524,15 @@ export default function ServiceDetail() {
                 placeholder="Email (optional)"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className= "px-4 py-3 rounded-full border border-emerald-200 focus:ring-2 focus:ring-emerald-300 w-full sm:col-span-2"
+                className="px-4 py-3 rounded-full border border-emerald-200 focus:ring-2 focus:ring-emerald-300 w-full sm:col-span-2"
               />
             </div>
 
-            <div className= "mt-4">
+            <div className="mt-4">
               <label className="font-semibold text-emerald-800 block mb-2">
                 Payment Method
               </label>
-              <div className= "inline-flex gap-2">
+              <div className="inline-flex gap-2">
                 <label
                   className={serviceDetailStyles.paymentOption(
                     paymentMethod === "Cash",
@@ -528,7 +544,7 @@ export default function ServiceDetail() {
                     value="Cash"
                     checked={paymentMethod === "Cash"}
                     onChange={() => setPaymentMethod("Cash")}
-                    className= "inline-flex gap-2"
+                    className="inline-flex gap-2"
                   />
                   Cash
                 </label>
@@ -543,7 +559,7 @@ export default function ServiceDetail() {
                     value="Online"
                     checked={paymentMethod === "Online"}
                     onChange={() => setPaymentMethod("Online")}
-                    className= "hidden"
+                    className="hidden"
                   />
                   Online
                 </label>
@@ -553,10 +569,12 @@ export default function ServiceDetail() {
 
           {/* DATE */}
           <div>
-            <h2 className="text-xl font-semibold text-emerald-900 mb-2">Select Date *</h2>
+            <h2 className="text-xl font-semibold text-emerald-900 mb-2">
+              Select Date *
+            </h2>
             <div className="overflow-x-auto -mx-2 px-2">
               <div className="inline-flex gap-3 sm:flex sm:flex-wrap">
-                {service.dates.map((d) => (
+                {service.dates?.map((d) => (
                   <button
                     key={d}
                     onClick={() => {
@@ -577,7 +595,9 @@ export default function ServiceDetail() {
           {/* TIME */}
           {selectedDate && (
             <div className="mt-4">
-              <h2 className="text-xl font-semibold text-emerald-900 mb-2">Select Time *</h2>
+              <h2 className="text-xl font-semibold text-emerald-900 mb-2">
+                Select Time *
+              </h2>
               <div className="overflow-x-auto -mx-2 px-2">
                 <div className="inline-flex gap-3 sm:flex sm:flex-wrap">
                   {(service.slots[selectedDate] || []).map((t) => (
@@ -605,14 +625,10 @@ export default function ServiceDetail() {
 
           <div>
             {submitError && (
-              <div className="text-rose-600 mb-2">
-                {submitError}
-              </div>
+              <div className="text-rose-600 mb-2">{submitError}</div>
             )}
             {successMessage && (
-              <div className="text-emerald-700 mb-2">
-                {successMessage}
-              </div>
+              <div className="text-emerald-700 mb-2">{successMessage}</div>
             )}
             <button
               disabled={!isFormValid() || submitting}
@@ -634,7 +650,9 @@ export default function ServiceDetail() {
 
         {/* RIGHT */}
         <div className="bg-white/80 rounded-3xl shadow-xl p-6 sm:p-8 border border-white/50 h-fit">
-          <h1 className="text-2xl lg:text-3xl xl:text-3xl md:text-2xl sm:text-4xl font-bold bg-linear-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">{service.name}</h1>
+          <h1 className="text-2xl lg:text-3xl xl:text-3xl md:text-2xl sm:text-4xl font-bold bg-linear-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">
+            {service.name}
+          </h1>
 
           <div className="mt-6 bg-emerald-50 p-5 rounded-xl border border-emerald-100">
             <h2 className="flex items-center gap-3 text-md md:text-xl lg:text-xl xl:text-xl font-semibold text-emerald-900">

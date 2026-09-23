@@ -14,10 +14,15 @@ const parseJsonArrayField = (field) => {
   if (!field) return [];
 
   if (Array.isArray(field)) return field;
-  if (typeof field === "String") {
+
+  if (typeof field === "string") {
     try {
       const parsed = JSON.parse(field);
-      if (Array.isArray(parsed)) return parsed;
+
+      if (Array.isArray(parsed)) {
+        return parsed;
+      }
+
       return typeof parsed === "string" ? [parsed] : [];
     } catch {
       return field
@@ -26,6 +31,7 @@ const parseJsonArrayField = (field) => {
         .filter(Boolean);
     }
   }
+
   return [];
 };
 
@@ -83,9 +89,20 @@ const parseAvailability = (v) => {
 export async function createService(req, res) {
   try {
     const b = req.body || {};
+
     const instructions = parseJsonArrayField(b.instructions);
-    const rawSlots = parseJsonArrayField(b.rawSlots);
-    const slots = normalizeSlotsToMap(rawSlots);
+
+    let slots = {};
+
+    if (b.slots) {
+      try {
+        slots = JSON.parse(b.slots);
+      } catch (err) {
+        console.error("Invalid slots JSON:", err);
+        slots = {};
+      }
+    }
+
     const numericPrice = sanitizePrice(b.price);
     const available = parseAvailability(b.availability);
 
@@ -150,6 +167,7 @@ export async function getServiceById(req, res) {
   try {
     const { id } = req.params;
     const service = await Service.findById(id).lean();
+    console.log("Service me kush aya kya", service);
     if (!service)
       return res.status(404).json({
         success: false,
@@ -184,19 +202,38 @@ export async function updateService(req, res) {
 
     const b = req.body || {};
     const updateData = {};
-    //to update each field if alrady present then update them
-    // to update a service
 
-    if (b.name !== undefined) updateData.name = b.name;
-    if (b.about !== undefined) updateData.data = b.about;
-    if (b.shortDescription !== undefined)
+    if (b.name !== undefined) {
+      updateData.name = b.name;
+    }
+
+    if (b.about !== undefined) {
+      updateData.about = b.about;
+    }
+
+    if (b.shortDescription !== undefined) {
       updateData.shortDescription = b.shortDescription;
-    if (b.price !== undefined) updateData.price = sanitizePrice(b.price);
-    if (b.availability !== undefined)
-      updateData.availability = parseAvailability(b.availability);
-    if (b.instructions !== undefined)
+    }
+
+    if (b.price !== undefined) {
+      updateData.price = sanitizePrice(b.price);
+    }
+
+    if (b.availability !== undefined) {
+      updateData.available = parseAvailability(b.availability);
+    }
+
+    if (b.instructions !== undefined) {
       updateData.instructions = parseJsonArrayField(b.instructions);
-    if (b.slots !== undefined) updateData.slots = normalizeSlotsToMap(b.slots);
+    }
+
+    if (b.slots !== undefined) {
+      try {
+        updateData.slots = JSON.parse(b.slots);
+      } catch (err) {
+        console.error("Invalid slots JSON:", err);
+      }
+    }
 
     if (req.file) {
       try {

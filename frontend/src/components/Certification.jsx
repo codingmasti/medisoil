@@ -1,4 +1,4 @@
-import { certificationStyle } from "../assets/style/style";
+import { certificationStyle } from "../assets/styles/style";
 
 import C1 from "../assets/image/C1.png";
 import C2 from "../assets/image/C2.png";

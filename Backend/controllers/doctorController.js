@@ -39,6 +39,7 @@ function parseScheduleInput(s) {
       return {};
     }
   }
+  return s;
 }
 
 ///this function will convert doctor data into a plain text.

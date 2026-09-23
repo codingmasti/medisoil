@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { testimonialsStyles } from '../assets/style/style';
+import { testimonialsStyles } from '../assets/styles/style';
 import { Star } from 'lucide-react';
 
 const Testimonial = () => {

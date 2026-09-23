@@ -151,6 +151,18 @@ export const addServiceStyle = {
 };
 
 export const serviceAppointmentStyles = {
+  statusBadge: (status) => {
+    const map = {
+      Pending: "bg-yellow-100 text-yellow-800",
+      Confirmed: "bg-emerald-100 text-emerald-800",
+      Canceled: "bg-red-100 text-red-800",
+      Completed: "bg-sky-100 text-sky-800",
+      Rescheduled: "bg-indigo-100 text-indigo-800",
+    };
+    const classes = map[status] || "bg-gray-100 text-gray-800";
+    return `inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${classes}`;
+  },
+
   cancelButton: (isLocked) =>
     `px-3 py-1 rounded-full text-sm border ${
       isLocked
@@ -194,3 +206,4 @@ export const serviceAppointmentStyles = {
         : "bg-white text-emerald-800 border-emerald-400 hover:shadow-sm"
     }`,
 };
+

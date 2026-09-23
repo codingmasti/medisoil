@@ -11,6 +11,7 @@ const serviceSchema = new mongoose.Schema({
     imageUrl: {type:String, default: null},
     imagePublicId: {type: String, default: null},
     dates:{type:[String], default: []},
+    //slots:{type:[String], default: []},
     slots: {type: Map, of: [String], default: {}},
 
     instructions: {type: [String], default: []},
